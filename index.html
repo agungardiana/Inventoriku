@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f766e">
+  <title>InventoriKu — Pengelolaan Inventory</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <main class="auth-wrap" id="authView">
+    <section class="auth-card">
+      <div class="brand-mark">IK</div>
+      <p class="eyebrow">INVENTORIKU</p>
+      <h1>Kelola stok lebih mudah.</h1>
+      <p class="muted">Masuk atau buat akun untuk mengelola inventori dari mana saja.</p>
+      <div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="email" placeholder="nama@email.com" required></div>
+      <div class="field"><label for="password">Kata sandi</label><input id="password" type="password" autocomplete="current-password" placeholder="Minimal 6 karakter" required></div>
+      <div class="auth-actions">
+        <button class="btn primary" id="loginBtn">Masuk</button>
+        <button class="btn secondary" id="signupBtn">Buat akun</button>
+      </div>
+      <p class="notice" id="authMessage" role="status"></p>
+      <p class="tiny">Akun baru mungkin perlu verifikasi email, tergantung pengaturan Supabase.</p>
+    </section>
+  </main>
+
+  <div id="appView" class="app-shell hidden">
+    <aside class="sidebar">
+      <div class="side-brand"><span class="brand-mark small">IK</span><div><strong>InventoriKu</strong><small>Stock management</small></div></div>
+      <nav><button class="nav-item active" data-page="dashboard">▦ <span>Ringkasan</span></button><button class="nav-item" data-page="inventory">▤ <span>Data barang</span></button></nav>
+      <div class="sidebar-bottom"><span id="userEmail" class="tiny"></span><button id="logoutBtn" class="btn logout">Keluar</button></div>
+    </aside>
+    <main class="main-content">
+      <header class="topbar"><div><p class="eyebrow">PENGELOLAAN STOK</p><h1 id="pageTitle">Ringkasan</h1></div><button class="btn primary" id="addItemTop">+ Tambah barang</button></header>
+      <p class="notice" id="appMessage" role="status"></p>
+      <section id="dashboardPage">
+        <div class="stats">
+          <article class="stat-card"><span>Total jenis barang</span><strong id="totalKinds">0</strong><small>Item tercatat</small></article>
+          <article class="stat-card"><span>Total unit stok</span><strong id="totalUnits">0</strong><small>Jumlah seluruh stok</small></article>
+          <article class="stat-card"><span>Stok menipis</span><strong id="lowStock">0</strong><small>Stok ≤ batas minimum</small></article>
+          <article class="stat-card"><span>Nilai persediaan</span><strong id="stockValue">Rp0</strong><small>Harga modal × stok</small></article>
+        </div>
+        <section class="panel"><div class="panel-heading"><div><h2>Perlu diperhatikan</h2><p class="muted">Barang yang stoknya sudah mencapai batas minimum.</p></div><button class="btn secondary" id="viewInventoryBtn">Lihat semua</button></div>
+          <div class="table-wrap"><table><thead><tr><th>Nama barang</th><th>SKU</th><th>Stok</th><th>Batas minimum</th></tr></thead><tbody id="lowStockRows"><tr><td colspan="4" class="empty">Belum ada data barang.</td></tr></tbody></table></div>
+        </section>
+      </section>
+      <section id="inventoryPage" class="hidden">
+        <section class="panel">
+          <div class="toolbar"><input id="searchInput" type="search" placeholder="Cari nama barang atau SKU..."><span class="muted" id="itemCount">0 barang</span></div>
+          <div class="table-wrap"><table><thead><tr><th>Barang</th><th>SKU</th><th>Kategori</th><th>Stok</th><th>Min.</th><th>Harga modal</th><th>Lokasi</th><th>Aksi</th></tr></thead><tbody id="inventoryRows"><tr><td colspan="8" class="empty">Belum ada data barang.</td></tr></tbody></table></div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="itemDialog">
+    <form id="itemForm" class="item-form">
+      <div class="dialog-heading"><div><p class="eyebrow">DATA INVENTORI</p><h2 id="dialogTitle">Tambah barang</h2></div><button type="button" id="closeDialog" class="icon-btn" aria-label="Tutup">✕</button></div>
+      <input type="hidden" id="itemId">
+      <div class="form-grid">
+        <div class="field full"><label for="itemName">Nama barang *</label><input id="itemName" required maxlength="120" placeholder="Contoh: Kertas A4"></div>
+        <div class="field"><label for="sku">SKU / kode barang *</label><input id="sku" required maxlength="60" placeholder="BRG-001"></div>
+        <div class="field"><label for="category">Kategori</label><input id="category" maxlength="80" placeholder="ATK"></div>
+        <div class="field"><label for="quantity">Jumlah stok *</label><input id="quantity" type="number" min="0" step="1" value="0" required></div>
+        <div class="field"><label for="minStock">Batas minimum</label><input id="minStock" type="number" min="0" step="1" value="5" required></div>
+        <div class="field"><label for="costPrice">Harga modal (Rp)</label><input id="costPrice" type="number" min="0" step="1" value="0" required></div>
+        <div class="field"><label for="location">Lokasi penyimpanan</label><input id="location" maxlength="100" placeholder="Rak A-1"></div>
+        <div class="field full"><label for="notes">Catatan</label><textarea id="notes" rows="2" maxlength="1000" placeholder="Informasi tambahan (opsional)"></textarea></div>
+      </div>
+      <p class="notice" id="formMessage" role="status"></p>
+      <div class="dialog-actions"><button type="button" class="btn secondary" id="cancelDialog">Batal</button><button class="btn primary" id="saveItemBtn" type="submit">Simpan barang</button></div>
+    </form>
+  </dialog>
+  <footer class="footer-note">InventoriKu · Data disimpan online melalui Supabase</footer>
+</body>
+</html>
