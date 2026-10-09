@@ -1,7 +1,7 @@
 /* Isi SUPABASE_URL dan SUPABASE_ANON_KEY setelah membuat proyek Supabase.
    Gunakan anon/publishable key saja, jangan pernah menaruh service_role key di browser. */
-const SUPABASE_URL = "https://orjwiohtsfpugrnxwbwn.supabase.co/rest/v1/";
-const SUPABASE_ANON_KEY = "sb_publishable_yNf1LwqdqBl__DISwmcI8w_n7c4hwFp";
+const SUPABASE_URL = 'https://orjwiohtsfpugrnxwbwn.supabase.co/rest/v1/';
+const SUPABASE_ANON_KEY = 'sb_publishable_yNf1LwqdqBl__DISwmcI8w_n7c4hwFp';
 const configured = SUPABASE_URL.startsWith("https://") && !SUPABASE_URL.includes("GANTI_") && !SUPABASE_ANON_KEY.includes("GANTI_");
 const $ = (id) => document.getElementById(id);
 let db = null, items = [], currentUser = null;
